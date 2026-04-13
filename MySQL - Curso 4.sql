@@ -217,3 +217,16 @@ create view view_ocupacao_regiao_tempo as
     
 select * from view_ocupacao_regiao_tempo;
 select regiao, sum(total_alugueis) from view_ocupacao_regiao_tempo group by regiao;
+
+## Criando um relatório para a área de negócios
+
+select * from regioes_geograficas;
+#id, estado, regiao
+
+select e.estado
+from regioes_geograficas r
+right join enderecos e on r.estado = e.estado
+where r.estado is null
+group by e.estado;
+
+call inclui_regioes_estados();
