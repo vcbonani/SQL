@@ -1,21 +1,21 @@
-SELECT * FROM curso-big-query-19140.belleza_verde_vendas.clientes;
+SELECT * FROM curso-big-query.belleza_verde_vendas.clientes;
 
 SELECT c.nome, COUNT(v.id_venda)
-FROM curso-big-query-19140.belleza_verde_vendas.clientes c
-JOIN curso-big-query-19140.belleza_verde_vendas.vendas v ON c.id_cliente = v.id_cliente
+FROM curso-big-query.belleza_verde_vendas.clientes c
+JOIN curso-big-query.belleza_verde_vendas.vendas v ON c.id_cliente = v.id_cliente
 GROUP BY c.nome;
 
-SELECT nome FROM curso-big-query-19140.belleza_verde_vendas.clientes 
+SELECT nome FROM curso-big-query.belleza_verde_vendas.clientes 
 WHERE localizacao = 'Rio de Janeiro' AND id_vendedor = 4;
 
 #usando subquery
 SELECT * FROM (
-  SELECT *, ROUND((quantidade * preco), 2) AS faturamento FROM curso-big-query-19140.belleza_verde_vendas.vendas
+  SELECT *, ROUND((quantidade * preco), 2) AS faturamento FROM curso-big-query.belleza_verde_vendas.vendas
 ) WHERE faturamento >= 600;
 
 #WITH funciona como uma subquery
 WITH vendas_faturamento AS (
-  SELECT *, ROUND((quantidade * preco), 2) AS faturamento FROM curso-big-query-19140.belleza_verde_vendas.vendas
+  SELECT *, ROUND((quantidade * preco), 2) AS faturamento FROM curso-big-query.belleza_verde_vendas.vendas
 )
 SELECT * FROM vendas_faturamento WHERE faturamento >= 600;
 
@@ -24,14 +24,14 @@ SELECT id_produto AS produto, id_cliente AS cliente, EXTRACT(YEAR FROM data) AS 
        SUM(quantidade * preco) AS faturamento_total, MAX(quantidade * preco) AS maior_faturamento,
        MIN(quantidade * preco) AS menor_faturamento, AVG(quantidade * preco) AS faturamento_medio,
        COUNT(*) as numero_vendas
-FROM curso-big-query-19140.belleza_verde_vendas.vendas GROUP BY produto,cliente, ano;
+FROM curso-big-query.belleza_verde_vendas.vendas GROUP BY produto,cliente, ano;
 
 #Trabalhando com HAVING
 SELECT id_produto AS produto, id_cliente AS cliente, EXTRACT(YEAR FROM data) AS ano, 
        SUM(quantidade * preco) AS faturamento_total, MAX(quantidade * preco) AS maior_faturamento,
        MIN(quantidade * preco) AS menor_faturamento, AVG(quantidade * preco) AS faturamento_medio,
        COUNT(*) as numero_vendas
-FROM curso-big-query-19140.belleza_verde_vendas.vendas
+FROM curso-big-query.belleza_verde_vendas.vendas
 GROUP BY produto,cliente, ano
 HAVING SUM(quantidade * preco) >= 3000 AND MIN(quantidade * preco) <= 60;
 
@@ -42,7 +42,7 @@ FROM
 (
     SELECT id_produto AS produto, id_cliente AS cliente, EXTRACT(YEAR FROM data) AS ano, 
            SUM(quantidade * preco) AS faturamento_total
-    FROM curso-big-query-19140.belleza_verde_vendas.vendas
+    FROM curso-big-query.belleza_verde_vendas.vendas
     WHERE id_produto = 1 AND id_cliente = 1
     GROUP BY produto,cliente, ano
 ) GROUP BY produto, cliente;
@@ -75,7 +75,7 @@ FROM
 (
     SELECT id_produto AS produto, id_cliente AS cliente, EXTRACT(YEAR FROM data) AS ano, 
            SUM(quantidade * preco) AS faturamento_total
-    FROM curso-big-query-19140.belleza_verde_vendas.vendas
+    FROM curso-big-query.belleza_verde_vendas.vendas
     WHERE id_produto = 1 AND (id_cliente = 1 OR id_cliente = 2)
     GROUP BY produto,cliente, ano
 ) GROUP BY produto, cliente;
@@ -92,11 +92,11 @@ SELECT ARRAY_LENGTH(resultado_consulta) FROM
 
 #Array sem agregação de valor
 SELECT localizacao, ARRAY_AGG(nome) AS nomes
-FROM curso-big-query-19140.belleza_verde_vendas.clientes
+FROM curso-big-query.belleza_verde_vendas.clientes
 GROUP BY localizacao;
 
 SELECT localizacao, ARRAY_LENGTH(ARRAY_AGG(nome)) AS qtd_nomes
-FROM curso-big-query-19140.belleza_verde_vendas.clientes
+FROM curso-big-query.belleza_verde_vendas.clientes
 GROUP BY localizacao;
 
 
@@ -162,10 +162,10 @@ SELECT gender, numtrips[OFFSET(0)] AS first_element FROM UNNEST(
 
 #Exemplo prático do UNNEST
 
-SELECT * FROM curso-big-query-19140.belleza_verde_vendas.produtos;
+SELECT * FROM curso-big-query.belleza_verde_vendas.produtos;
 
 SELECT id_produto, nome, categoria, preco, id_materiaprima, CONCAT((percent_distribuicao) * 100, '%') AS distribuicao
-FROM curso-big-query-19140.belleza_verde_vendas.produtos, 
+FROM curso-big-query.belleza_verde_vendas.produtos, 
 UNNEST(materiasprimas) AS id_materiaprima, UNNEST(distribuicao) AS percent_distribuicao;
 
 #Mão na massa - Usando ARRAY_LENGTH
@@ -175,18 +175,18 @@ FROM (
 SELECT nome, categoria, preco, ARRAY_LENGTH(materiasprimas) AS qtd_materiasprimas,
        CAST(materiasprimas[OFFSET(ARRAY_LENGTH(materiasprimas) - 1)] AS INT64) AS ultima_materiaprima,
        distribuicao[OFFSET(ARRAY_LENGTH(distribuicao) - 1)] as ultima_distribuicao
-FROM curso-big-query-19140.belleza_verde_vendas.produtos
+FROM curso-big-query.belleza_verde_vendas.produtos
 ) p
-JOIN curso-big-query-19140.belleza_verde_vendas.materiasprimas mp ON p.ultima_materiaprima = mp.id_materia;
+JOIN curso-big-query.belleza_verde_vendas.materiasprimas mp ON p.ultima_materiaprima = mp.id_materia;
 
 #Usando UNNEST em múltiplos Arrays
 
 SELECT id_produto, nome, preco, 
        ROW_NUMBER() OVER () as indice
-FROM curso-big-query-19140.belleza_verde_vendas.produtos;
+FROM curso-big-query.belleza_verde_vendas.produtos;
 
 SELECT AS STRUCT mp, ROW_NUMBER() OVER () as indice
-FROM curso-big-query-19140.belleza_verde_vendas.produtos,
+FROM curso-big-query.belleza_verde_vendas.produtos,
 UNNEST(materiasprimas) AS mp;
 
 SELECT id_produto, nome, preco,
@@ -194,7 +194,7 @@ SELECT id_produto, nome, preco,
     FROM UNNEST(materiasprimas) AS mp) AS mp_indice,
     ARRAY (SELECT AS STRUCT d, ROW_NUMBER() OVER () as indice
     FROM UNNEST(distribuicao) AS d) AS distribuicao_indice
-FROM curso-big-query-19140.belleza_verde_vendas.produtos;
+FROM curso-big-query.belleza_verde_vendas.produtos;
 
 WITH indice_produtos AS (
     SELECT id_produto, nome, categoria, preco,
@@ -202,7 +202,7 @@ WITH indice_produtos AS (
         FROM UNNEST(materiasprimas) AS mp) AS mp_indice,
         ARRAY (SELECT AS STRUCT d, ROW_NUMBER() OVER () as indice
         FROM UNNEST(distribuicao) AS d) AS distribuicao_indice
-    FROM curso-big-query-19140.belleza_verde_vendas.produtos)
+    FROM curso-big-query.belleza_verde_vendas.produtos)
 SELECT ip.id_produto, ip.nome, ip.categoria, ip.preco, 
        mpUN.mp as materia_prima, CONCAT(dUN.d * 100, '%') AS percentual_distribuicao
 FROM indice_produtos ip
@@ -236,9 +236,9 @@ FULL JOIN REGIOES R ON C.ESTADO = R.ESTADO;
 
 SELECT VENDAS.id_produto, PRODUTOS.nome AS nome_produto, VENDAS.id_cliente, CLIENTES.nome AS nome_cliente,
     VENDAS.data, VENDAS.quantidade
-FROM curso-big-query-19140.belleza_verde_vendas.vendas VENDAS
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos PRODUTOS ON VENDAS.id_produto = PRODUTOS.id_produto
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes CLIENTES ON VENDAS.id_cliente = CLIENTES.id_cliente
+FROM curso-big-query.belleza_verde_vendas.vendas VENDAS
+INNER JOIN curso-big-query.belleza_verde_vendas.produtos PRODUTOS ON VENDAS.id_produto = PRODUTOS.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.clientes CLIENTES ON VENDAS.id_cliente = CLIENTES.id_cliente
 LIMIT 10;
 
 WITH resultado_produto AS (
@@ -248,7 +248,7 @@ WITH indice_produtos AS (
         FROM UNNEST(materiasprimas) AS mp) AS mp_indice,
         ARRAY (SELECT AS STRUCT d, ROW_NUMBER() OVER () as indice
         FROM UNNEST(distribuicao) AS d) AS distribuicao_indice
-    FROM curso-big-query-19140.belleza_verde_vendas.produtos)
+    FROM curso-big-query.belleza_verde_vendas.produtos)
 SELECT ip.id_produto, ip.nome, ip.categoria, ip.preco, 
        mpUN.mp as materia_prima, CONCAT(dUN.d * 100, '%') AS percentual_distribuicao
 FROM indice_produtos ip
@@ -257,35 +257,35 @@ CROSS JOIN UNNEST (ip.distribuicao_indice) AS dUN
 ON mpUN.indice = dUN.indice)
 SELECT rp.id_produto, rp.nome, rp.categoria, rp.preco, rp.materia_prima, mp.nome AS nome_materia
 FROM resultado_produto rp
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.materiasprimas mp ON CAST(rp.materia_prima AS INT64) = mp.id_materia;
+INNER JOIN curso-big-query.belleza_verde_vendas.materiasprimas mp ON CAST(rp.materia_prima AS INT64) = mp.id_materia;
 
 #VENDAS ANUAIS POR VENDEDORES
 
 SELECT ve.nome AS vendedor, pr.nome AS produto, EXTRACT(YEAR FROM va.data) as ano,
        SUM(va.quantidade) AS total_vendas
-FROM curso-big-query-19140.belleza_verde_vendas.vendas va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
+FROM curso-big-query.belleza_verde_vendas.vendas va
+INNER JOIN curso-big-query.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
+INNER JOIN curso-big-query.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
 GROUP BY vendedor, produto, ano ORDER BY vendedor, produto, ano;
 
 # Comparando as vendas com as metas
 
-SELECT * FROM curso-big-query-19140.belleza_verde_vendas.metas;
+SELECT * FROM curso-big-query.belleza_verde_vendas.metas;
 
 WITH vendas_anuais AS (
 SELECT ve.id_vendedor, ve.nome AS vendedor, pr.id_produto, pr.nome AS produto, EXTRACT(YEAR FROM va.data) as ano,
        SUM(va.quantidade) AS total_vendas
-FROM curso-big-query-19140.belleza_verde_vendas.vendas va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
+FROM curso-big-query.belleza_verde_vendas.vendas va
+INNER JOIN curso-big-query.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
+INNER JOIN curso-big-query.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
 GROUP BY vendedor, produto, ano, ve.id_vendedor, pr.id_produto ORDER BY vendedor, produto, ano
 )
 SELECT va.vendedor, va.produto, va.ano, va.total_vendas, me.quantidade_meta, 
        CONCAT(ROUND((va.total_vendas / me.quantidade_meta) * 100, 2), '%') AS meta_atingida
 FROM vendas_anuais va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
                                                               AND va.id_vendedor = me.id_vendedor
                                                               AND va.ano = me.ano;
 
@@ -294,10 +294,10 @@ INNER JOIN curso-big-query-19140.belleza_verde_vendas.metas me ON va.id_produto 
 WITH vendas_anuais AS (
 SELECT ve.id_vendedor, ve.nome AS vendedor, pr.id_produto, pr.nome AS produto, EXTRACT(YEAR FROM va.data) as ano,
        SUM(va.quantidade) AS total_vendas
-FROM curso-big-query-19140.belleza_verde_vendas.vendas va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
+FROM curso-big-query.belleza_verde_vendas.vendas va
+INNER JOIN curso-big-query.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
+INNER JOIN curso-big-query.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
 GROUP BY vendedor, produto, ano, ve.id_vendedor, pr.id_produto ORDER BY vendedor, produto, ano
 )
 SELECT va.vendedor, va.produto, va.ano, va.total_vendas, me.quantidade_meta, 
@@ -307,7 +307,7 @@ SELECT va.vendedor, va.produto, va.ano, va.total_vendas, me.quantidade_meta,
            WHEN va.total_vendas = me.quantidade_meta THEN 'Atingiu a meta'
            ELSE 'Abaixo da meta' END AS status_meta
 FROM vendas_anuais va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
                                                               AND va.id_vendedor = me.id_vendedor
                                                               AND va.ano = me.ano;
 
@@ -317,17 +317,17 @@ INNER JOIN curso-big-query-19140.belleza_verde_vendas.metas me ON va.id_produto 
 WITH vendas_anuais AS (
     SELECT ve.id_vendedor, ve.nome AS vendedor, pr.id_produto, pr.nome AS produto, EXTRACT(YEAR FROM va.data) as ano,
         SUM(va.quantidade) AS total_vendas
-    FROM curso-big-query-19140.belleza_verde_vendas.vendas va
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
+    FROM curso-big-query.belleza_verde_vendas.vendas va
+    INNER JOIN curso-big-query.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
+    INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
+    INNER JOIN curso-big-query.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
     GROUP BY vendedor, produto, ano, ve.id_vendedor, pr.id_produto ORDER BY vendedor, produto, ano
 ), vendas_vendedor_produto AS(
     SELECT ve.id_vendedor, ve.nome AS vendedor, pr.id_produto, pr.nome AS produto, SUM(va.quantidade) AS total_vendas
-    FROM curso-big-query-19140.belleza_verde_vendas.vendas va
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
-    INNER JOIN curso-big-query-19140.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
+    FROM curso-big-query.belleza_verde_vendas.vendas va
+    INNER JOIN curso-big-query.belleza_verde_vendas.produtos pr ON va.id_produto = pr.id_produto
+    INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON va.id_cliente = cl.id_cliente
+    INNER JOIN curso-big-query.belleza_verde_vendas.vendedores ve ON cl.id_vendedor = ve.id_vendedor
     GROUP BY vendedor, produto, ve.id_vendedor, pr.id_produto ORDER BY vendedor, produto)
 SELECT va.vendedor, va.produto, va.ano, va.total_vendas, ROUND((va.total_vendas / vvp.total_vendas) * 100, 2) as distribuicao_vendas,
        me.quantidade_meta, CONCAT(ROUND((va.total_vendas / me.quantidade_meta) * 100, 2), '%') AS meta_atingida,
@@ -336,7 +336,7 @@ SELECT va.vendedor, va.produto, va.ano, va.total_vendas, ROUND((va.total_vendas 
            WHEN va.total_vendas = me.quantidade_meta THEN 'Atingiu a meta'
            ELSE 'Abaixo da meta' END AS status_meta
 FROM vendas_anuais va
-INNER JOIN curso-big-query-19140.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
+INNER JOIN curso-big-query.belleza_verde_vendas.metas me ON va.id_produto = me.id_produto
                                                               AND va.id_vendedor = me.id_vendedor
                                                               AND va.ano = me.ano
 INNER JOIN vendas_vendedor_produto vvp ON vvp.id_produto = va.id_produto

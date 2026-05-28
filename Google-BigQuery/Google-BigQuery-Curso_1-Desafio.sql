@@ -2,8 +2,8 @@
 
 WITH cte_faturamento AS (
   SELECT cl.nome AS cliente, ROUND(SUM(ve.quantidade * ve.preco), 2) AS faturamento
-  FROM curso-big-query-19140.belleza_verde_vendas.vendas ve
-  INNER JOIN curso-big-query-19140.belleza_verde_vendas.clientes cl ON ve.id_cliente = cl.id_cliente
+  FROM curso-big-query.belleza_verde_vendas.vendas ve
+  INNER JOIN curso-big-query.belleza_verde_vendas.clientes cl ON ve.id_cliente = cl.id_cliente
   WHERE EXTRACT(YEAR FROM ve.data) = 2021 GROUP BY cl.nome
 ),
 faturamento_ranking AS(
