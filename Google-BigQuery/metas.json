@@ -1,0 +1,43 @@
+[
+
+    {
+
+        "name": "ano",
+
+        "type": "INTEGER",
+
+        "mode": "NULLABLE"
+
+    },
+
+    {
+
+        "name": "id_vendedor",
+
+        "type": "INTEGER",
+
+        "mode": "NULLABLE"
+
+    },
+
+    {
+
+        "name": "id_produto",
+
+        "type": "INTEGER",
+
+        "mode": "NULLABLE"
+
+    },
+
+    {
+
+        "name": "quantidade_meta",
+
+        "type": "INTEGER",
+
+        "mode": "NULLABLE"
+
+    }
+
+]

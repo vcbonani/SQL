@@ -1,0 +1,66 @@
+Criar conjunto de dados:
+
+bq --location=southamerica-east1 mk --dataset --description="<texto>" <nome_conjunto_de_dados>
+
+Listar conjuntos de dados:
+
+bq ls
+
+Ver informações do conjunto de dados:
+
+bq show <nome_conjunto_de_dados>
+
+Ver informações do conjunto de dados no formato JSON:
+
+bq show --format=prettyjson  <nome_conjunto_de_dados>
+
+Atualizando uma propriedade do conjunto de dados:
+
+bq update --description="<texto>" <nome_conjunto_de_dados>
+
+Para copiar os dados de um conjunto de dados para outro:
+
+bq mk --transfer_config \
+--project_id=project-3683e6cb-e8ee-4b8e-8b5 \
+--data_source=cross_region_copy \
+--target_dataset=belleza_verde_vendas_hom \
+--display_name="Job de copia de conjunto de dados para Belleza Verde Hom" \
+--params='{"source_dataset_id":"belleza_verde_vendas","source_project_id":"project-3683e6cb-e8ee-4b8e-8b5","overwrite_destination_table":"true"}'
+
+Para excluir conjunto de dados:
+
+bq rm -r -d belleza_verde_vendas_hom
+
+Para criar tabelas:
+
+bq mk --table belleza_verde_vendas_hom.fornecedores id_fornecedor:INT64,nome:STRING,localizacao:STRING
+
+Para criar tabelas a partir de um json
+
+bq mk --table --schema=materiasprimas.json belleza_verde_vendas_hom.materiasprimas
+
+bq mk --table belleza_verde_vendas_hom.produtos
+
+Para listar arquivos do diretório:
+
+ls -l
+
+Para obter o JSON de uma tabela já existente e exportar para um arquivo:
+
+bq show --schema --format=prettyjson belleza_verde_vendas_hom.clientes > /tmp/clientes.json
+
+Como executar uma consulta em um arquivo externo pelo shell:
+
+bq query --use_legacy_sql=false < del_tmp_vendedores1.sql
+
+Carregar dados a partir de um arquivo:
+
+bq load --format=csv --skip_leading_rows=0 belleza_verde_vendas_hom.tmp_vendedores1 gs://curso_storage_vini/vendedores.csv tmp_vendedores1.json
+
+Executar um arquivo script shell:
+
+#transforma o script em um executável
+chmod +x executa_carga_vendedores.sh
+
+#executa arquivo script shell:
+./executa_carga_vendedores.sh

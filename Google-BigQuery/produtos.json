@@ -1,0 +1,71 @@
+[
+
+    { 
+
+        "name": "id_produto", 
+
+        "type": "INTEGER", 
+
+        "mode": "NULLABLE" 
+
+        },
+
+    { 
+
+        "name": "nome", 
+
+        "type": "STRING", 
+
+        "mode": "NULLABLE" 
+
+        },
+
+    { 
+
+        "name": "categoria", 
+
+        "type": "STRING", 
+
+        "mode": "NULLABLE" 
+
+        },
+
+    { 
+
+        "name": "preco", 
+
+        "type": "FLOAT", 
+
+        "mode": "NULLABLE" 
+
+        },
+
+    { 
+
+        "name": "materiasprimas", 
+
+        "type": "STRING", 
+
+        "mode": "REPEATED" 
+
+        },
+
+    { 
+
+        "name": "distribuicao", 
+
+        "type": "FLOAT", 
+
+        "mode": "REPEATED" },
+
+    { 
+
+        "name": "precos", 
+
+        "type": "STRING", 
+
+        "mode": "NULLABLE" 
+
+        }
+
+]
